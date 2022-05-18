@@ -21,6 +21,9 @@ chrono = "0.4"
 log = "0.4"
 tokio = { version = "1.16", features = ["sync", "time", "rt"] }
 
+[patch.crates-io]
+tokio-xmpp = { path = "../xmpp-rs/tokio-xmpp" }
+
 [dev-dependencies]
 env_logger = "0.9"
 tokio = { version = "1.16", features = ["full"] }
