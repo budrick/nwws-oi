@@ -18,7 +18,7 @@ impl Connection {
     /// joined to the NWWS MUC. If any of these steps fail, it returns `Err(Error)`.
     pub async fn new<C: Into<Config>>(config: C) -> Result<Self> {
         let config = config.into();
-        let jid = config.jid();
+        let sjid: String = config.jid();
         let Config {
             username,
             resource,
@@ -30,7 +30,7 @@ impl Connection {
 
         // Connect
         info!("connecting to {}", &config.server.hostname());
-        let mut client = tokio_xmpp::SimpleClient::new(&jid, password)
+        let mut client = tokio_xmpp::SimpleClient::new(&sjid, password)
             .await
             .map_err(|e| {
                 error!("connection failed: {}", e);
@@ -44,7 +44,7 @@ impl Connection {
         debug!("connected as {}", &jid);
 
         // Build the message to join the MUC
-        let channel_jid = channel.jid(nickname);
+        let channel_jid = channel.jid(nickname).unwrap();
         let join_message =
             xmpp_parsers::presence::Presence::new(xmpp_parsers::presence::Type::None)
                 .with_from(jid.clone())

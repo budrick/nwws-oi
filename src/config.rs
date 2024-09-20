@@ -97,18 +97,26 @@ pub enum Channel {
 }
 
 impl Channel {
-    pub(crate) fn jid(&self, nickname: String) -> jid::FullJid {
+    pub(crate) fn jid(&self, nickname: String) -> Result<jid::Jid, jid::Error> {
         match self {
-            Channel::Default => jid::FullJid {
-                node: Some("NWWS".into()),
-                domain: "conference.nwws-oi.weather.gov".into(),
-                resource: nickname,
-            },
-            Channel::Custom(jid) => jid::FullJid {
-                node: jid.node.clone(),
-                domain: jid.domain.clone(),
-                resource: nickname,
-            },
+            Channel::Default => jid::Jid::new(
+                format!(
+                    "{}@{}/{}",
+                    "NWWS",
+                    "conference.nwws-oi.weather.gov",
+                    nickname.as_str(),
+                )
+                .as_ref(),
+            ),
+            Channel::Custom(jid) => jid::Jid::new(
+                format!(
+                    "{}@{}/{}",
+                    jid.node_str().unwrap_or_else(|| ""),
+                    jid.domain_str(),
+                    nickname.as_str(),
+                )
+                .as_ref(),
+            ),
         }
     }
 }
